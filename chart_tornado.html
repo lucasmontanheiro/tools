@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Tornado Chart Generator</title>
+    <meta name="description" content="Visualize comparisons between two groups—like male vs female or region A vs B—using our free editable tornado chart tool. Input your categories and values to build a clean, horizontal bar chart.">
+    <meta name="keywords" content="tornado chart generator, population pyramid chart, group comparison graph, side-by-side bar chart, editable tornado chart online, free comparison chart tool">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://quickfreewebtools.com/chart_generator_tornado">
+
+    <meta property="og:title" content="Editable Tornado Chart Generator - Free Online Tool">
+    <meta property="og:description" content="Compare two groups across multiple categories using a clear tornado-style bar chart. Input your data and get a professional visual instantly.">
+    <meta property="og:url" content="https://quickfreewebtools.com/chart_generator_tornado">
+    <meta property="og:type" content="website">
+    <meta property="og:image" content="https://quickfreewebtools.com/assets/tornado-chart-preview.png">
+
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Free Tornado Chart Generator">
+    <meta name="twitter:description" content="Easily compare male/female data or two populations across categories. No account needed. Try our free editable tornado chart tool now.">
+    <meta name="twitter:image" content="https://quickfreewebtools.com/assets/tornado-chart-preview.png">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+    <script>
+        google.charts.load('current', {packages:['corechart']});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            let title = document.getElementById('chartTitle').value || 'Tornado Chart Example';
+            
+            // Helper to safely get numeric values
+            const getVal = (id) => parseInt(document.getElementById(id).value) || 0;
+            const getCat = (id) => document.getElementById(id).value || 'Category';
+
+            let data = google.visualization.arrayToDataTable([
+                ['Category', 'Male', 'Female'],
+                [getCat('cat1'), getVal('male1'), -getVal('female1')],
+                [getCat('cat2'), getVal('male2'), -getVal('female2')],
+                [getCat('cat3'), getVal('male3'), -getVal('female3')],
+                [getCat('cat4'), getVal('male4'), -getVal('female4')],
+                [getCat('cat5'), getVal('male5'), -getVal('female5')],
+            ]);
+
+            let options = {
+                title: title,
+                hAxis: {title: 'Population', format: 'short'},
+                vAxis: {title: 'Categories'},
+                bars: 'horizontal',
+                colors: ['#007bff', '#74c476'],
+                legend: {position: 'right'},
+                isStacked: true,
+                chartArea: {width: '70%', height: '80%'}
+            };
+
+            let chart = new google.visualization.BarChart(document.getElementById('chart_div'));
+            chart.draw(data, options);
+        }
+    </script>
+</head>
+<body class="container py-4">
+
+    <h2 class="mb-3 mt-5 text-center">Tornado Chart Generator</h2>
+    
+    <div class="row mt-5">
+        <div class="col-12 col-md-6">
+            <div class="mb-4">
+                <label class="form-label fw-bold">Chart Title:</label>
+                <input type="text" id="chartTitle" class="form-control" oninput="drawChart()" value="Tornado Chart Example">
+            </div>
+
+            <div class="row g-3">
+                <div class="col-md-4">
+                    <label class="form-label">Category A:</label>
+                    <input type="text" id="cat1" class="form-control" value="Age 0-18" oninput="drawChart()">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Male:</label>
+                    <input type="number" id="male1" class="form-control" value="5000" oninput="drawChart()">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Female:</label>
+                    <input type="number" id="female1" class="form-control" value="4800" oninput="drawChart()">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Category B:</label>
+                    <input type="text" id="cat2" class="form-control" value="Age 19-35" oninput="drawChart()">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Male:</label>
+                    <input type="number" id="male2" class="form-control" value="7500" oninput="drawChart()">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Female:</label>
+                    <input type="number" id="female2" class="form-control" value="8200" oninput="drawChart()">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Category C:</label>
+                    <input type="text" id="cat3" class="form-control" value="Age 36-50" oninput="drawChart()">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Male:</label>
+                    <input type="number" id="male3" class="form-control" value="6200" oninput="drawChart()">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Female:</label>
+                    <input type="number" id="female3" class="form-control" value="6400" oninput="drawChart()">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Category D:</label>
+                    <input type="text" id="cat4" class="form-control" value="Age 51-65" oninput="drawChart()">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Male:</label>
+                    <input type="number" id="male4" class="form-control" value="4000" oninput="drawChart()">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Female:</label>
+                    <input type="number" id="female4" class="form-control" value="4500" oninput="drawChart()">
+                </div>
+
+                <div class="col-md-4">
+                    <label class="form-label">Category E:</label>
+                    <input type="text" id="cat5" class="form-control" value="Age 65+" oninput="drawChart()">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Male:</label>
+                    <input type="number" id="male5" class="form-control" value="2500" oninput="drawChart()">
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label">Female:</label>
+                    <input type="number" id="female5" class="form-control" value="3100" oninput="drawChart()">
+                </div>
+            </div>
+        </div>
+        <div class="col-12 col-md-6">
+            <div id="chart_div" style="width: 100%; height: 500px;"></div>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

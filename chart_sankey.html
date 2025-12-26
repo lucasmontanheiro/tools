@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    <title>Dynamic Sankey Chart Generator</title>
+    <meta name="description" content="Create interactive Sankey charts dynamically. Modify data flow and visualize relationships instantly.">
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <script type="text/javascript" src="https://www.gstatic.com/charts/loader.js"></script>
+
+    <style>
+        body { background-color: #f8f9fa; font-family: 'Inter', sans-serif; }
+        .container { max-width: 1100px; margin-top: 20px; }
+        .chart-wrapper {
+            border: 1px solid #ddd;
+            padding: 15px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+            min-height: 450px;
+        }
+        .data-row { margin-bottom: 10px; }
+    </style>
+
+    <script>
+        google.charts.load("current", {packages:["sankey"]});
+        google.charts.setOnLoadCallback(drawChart);
+
+        function drawChart() {
+            var data = new google.visualization.DataTable();
+            data.addColumn('string', 'From');
+            data.addColumn('string', 'To');
+            data.addColumn('number', 'Weight');
+
+            let rows = document.querySelectorAll('.data-row');
+            let sankeyData = [];
+
+            rows.forEach(row => {
+                let from = row.querySelector('.from').value;
+                let to = row.querySelector('.to').value;
+                let value = parseInt(row.querySelector('.value').value) || 0;
+                if (from.trim() !== "" && to.trim() !== "" && value > 0) {
+                    sankeyData.push([from, to, value]);
+                }
+            });
+
+            if (sankeyData.length === 0) {
+                document.getElementById('sankey_chart').innerHTML = "<p class='text-muted text-center mt-5'>Add valid data to visualize the chart</p>";
+                return;
+            }
+
+            data.addRows(sankeyData);
+
+            var chart = new google.visualization.Sankey(document.getElementById('sankey_chart'));
+            
+            // Fixed width to '100%' for responsiveness
+            var options = {
+                width: '100%',
+                height: 400,
+                sankey: {
+                    link: { color: { fill: '#007bff', fillOpacity: 0.4 } },
+                    node: { label: { fontSize: 14, fontName: 'Inter' } }
+                }
+            };
+
+            chart.draw(data, options);
+        }
+
+        // Handle window resize to keep chart responsive
+        window.addEventListener('resize', drawChart);
+
+        function updateChart() {
+            drawChart();
+        }
+
+        function addRow() {
+            let container = document.getElementById("dataRows");
+            let row = document.createElement("div");
+            row.classList.add("row", "g-2", "data-row");
+            row.innerHTML = `
+                <div class='col-4 col-md-3'>
+                    <input type='text' class='form-control from' placeholder='From' oninput='updateChart()'>
+                </div>
+                <div class='col-4 col-md-3'>
+                    <input type='text' class='form-control to' placeholder='To' oninput='updateChart()'>
+                </div>
+                <div class='col-2 col-md-3'>
+                    <input type='number' class='form-control value' placeholder='Val' min='1' oninput='updateChart()'>
+                </div>
+                <div class='col-2 col-md-3'>
+                    <button type='button' class='btn btn-outline-danger w-100' onclick='removeRow(this)'>&times;</button>
+                </div>
+            `;
+            container.appendChild(row);
+        }
+
+        function removeRow(button) {
+            button.closest('.data-row').remove();
+            updateChart();
+        }
+    </script>
+</head>
+<body>
+
+<div class="container pb-5">
+    <div class="text-center mt-4 mb-5">
+        <h1>Dynamic Sankey Chart Generator</h1>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-lg-7">
+            <div class="chart-wrapper">
+                <div id="sankey_chart"></div>
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="card p-4 shadow-sm">
+                <h4 class="mb-3">Edit Flow Data</h4>
+                <div id="dataRows">
+                    <div class="row g-2 data-row">
+                        <div class="col-4 col-md-3">
+                            <input type="text" class="form-control from" value="Source A" oninput="updateChart()">
+                        </div>
+                        <div class="col-4 col-md-3">
+                            <input type="text" class="form-control to" value="Target X" oninput="updateChart()">
+                        </div>
+                        <div class="col-2 col-md-3">
+                            <input type="number" class="form-control value" value="10" min="1" oninput="updateChart()">
+                        </div>
+                        <div class="col-2 col-md-3">
+                            <button type="button" class="btn btn-outline-danger w-100" onclick="removeRow(this)">&times;</button>
+                        </div>
+                    </div>
+                </div>
+                <button class="btn btn-primary mt-3 w-100" onclick="addRow()">+ Add New Connection</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
