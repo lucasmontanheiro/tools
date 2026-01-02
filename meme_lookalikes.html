@@ -1,0 +1,186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Look-Alike Comparison Tool</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #0f0f12;
+            color: #ffffff;
+            font-family: 'Inter', sans-serif;
+            padding-top: 50px;
+        }
+        .main-container {
+            max-width: 900px;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 30px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .preview-canvas {
+            width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+            background: #1a1a1d;
+        }
+        .upload-btn {
+            background: #3a3a3f;
+            border: none;
+            color: white;
+            transition: 0.3s;
+        }
+        .upload-btn:hover {
+            background: #505055;
+        }
+        .download-btn {
+            background: linear-gradient(45deg, #007bff, #00d4ff);
+            border: none;
+            font-weight: bold;
+            padding: 12px 30px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container main-container shadow">
+    <div class="text-center mb-4">
+        <h1 class="fw-bold">Look-Alike Generator</h1>
+        <p class="text-muted">Upload two photos to see the resemblance.</p>
+    </div>
+
+    <div class="row g-4">
+        <div class="col-md-4">
+            <div class="mb-4">
+                <label class="form-label small text-uppercase fw-bold">Person A</label>
+                <input type="text" id="name1" class="form-control mb-2" placeholder="Enter Name">
+                <input type="file" id="file1" class="form-control upload-btn" accept="image/*">
+            </div>
+            <div class="mb-4">
+                <label class="form-label small text-uppercase fw-bold">Person B</label>
+                <input type="text" id="name2" class="form-control mb-2" placeholder="Enter Name">
+                <input type="file" id="file2" class="form-control upload-btn" accept="image/*">
+            </div>
+            <button id="download" class="btn btn-primary download-btn w-100 mt-3">Download Image</button>
+        </div>
+
+        <div class="col-md-8">
+            <canvas id="memeCanvas" class="preview-canvas"></canvas>
+            <p class="text-center mt-2 small text-muted">Real-time Preview</p>
+        </div>
+    </div>
+</div>
+
+<script>
+    const canvas = document.getElementById('memeCanvas');
+    const ctx = canvas.getContext('2d');
+    const inputs = ['name1', 'name2'];
+    const files = ['file1', 'file2'];
+    
+    let images = { file1: null, file2: null };
+
+    // Set Canvas Dimensions
+    canvas.width = 1200;
+    canvas.height = 800;
+
+    function draw() {
+        // Background
+        ctx.fillStyle = "#ffffff";
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+        const name1 = document.getElementById('name1').value || "Person 1";
+        const name2 = document.getElementById('name2').value || "Person 2";
+
+        // Draw Images (Side by Side)
+        const imgWidth = canvas.width / 2;
+        const imgHeight = 650; // Leave room for text below
+
+        if (images.file1) drawClippedImage(images.file1, 0, 0, imgWidth, imgHeight);
+        if (images.file2) drawClippedImage(images.file2, imgWidth, 0, imgWidth, imgHeight);
+
+        // Divider Line
+        ctx.strokeStyle = "#ffffff";
+        ctx.lineWidth = 10;
+        ctx.beginPath();
+        ctx.moveTo(imgWidth, 0);
+        ctx.lineTo(imgWidth, imgHeight);
+        ctx.stroke();
+
+        // Footer Bar for Names
+        ctx.fillStyle = "#1a1a1d";
+        ctx.fillRect(0, imgHeight, canvas.width, 150);
+
+        // Text Styles
+        ctx.fillStyle = "#ffffff";
+        ctx.font = "bold 40px Inter, Arial";
+        ctx.textAlign = "center";
+        ctx.fillText(name1.toUpperCase(), imgWidth / 2, imgHeight + 85);
+        ctx.fillText(name2.toUpperCase(), imgWidth + (imgWidth / 2), imgHeight + 85);
+
+        // Watermark
+        ctx.font = "20px Arial";
+        ctx.fillStyle = "rgba(255,255,255,0.5)";
+        ctx.fillText("MADE WITH LOOK-ALIKE GEN", canvas.width - 150, canvas.height - 20);
+    }
+
+    function drawClippedImage(img, x, y, w, h) {
+        const aspect = img.width / img.height;
+        const targetAspect = w / h;
+        let nw, nh, nx, ny;
+
+        if (aspect > targetAspect) {
+            nh = h;
+            nw = h * aspect;
+            nx = x - (nw - w) / 2;
+            ny = y;
+        } else {
+            nw = w;
+            nh = w / aspect;
+            nx = x;
+            ny = y - (nh - h) / 2;
+        }
+        ctx.save();
+        ctx.beginPath();
+        ctx.rect(x, y, w, h);
+        ctx.clip();
+        ctx.drawImage(img, nx, ny, nw, nh);
+        ctx.restore();
+    }
+
+    // Event Listeners
+    [...inputs, ...files].forEach(id => {
+        document.getElementById(id).addEventListener('input', (e) => {
+            if (e.target.type === 'file' && e.target.files[0]) {
+                const reader = new FileReader();
+                reader.onload = (event) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        images[id] = img;
+                        draw();
+                    };
+                    img.src = event.target.result;
+                };
+                reader.readAsDataURL(e.target.files[0]);
+            } else {
+                draw();
+            }
+        });
+    });
+
+    // Initial Draw
+    draw();
+
+    // Download Function
+    document.getElementById('download').addEventListener('click', () => {
+        const link = document.createElement('a');
+        link.download = 'look-alike-comparison.png';
+        link.href = canvas.toDataURL('image/png');
+        link.click();
+    });
+</script>
+
+</body>
+</html>
